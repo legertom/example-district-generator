@@ -155,8 +155,8 @@ function App() {
                   <legend className="text-base font-semibold text-slate-900 flex items-center gap-2 mb-2 px-0">
                     <span>District info</span>
                   </legend>
-                  <div className="space-y-4">
-                    <div>
+                  <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                    <div className="sm:col-span-2">
                       <label htmlFor="schoolDistrict" className="block text-sm font-medium text-slate-900 mb-1">
                         District Name
                       </label>
@@ -177,7 +177,7 @@ function App() {
                         <div className="text-xs text-rose-600 mt-1">{errors.schoolDistrict}</div>
                       )}
                     </div>
-                    <div>
+                    <div className="sm:max-w-xs">
                       <label htmlFor="schoolYear" className="block text-sm font-medium text-slate-900 mb-1">
                         School Year
                       </label>
@@ -209,7 +209,7 @@ function App() {
                   <legend className="text-base font-semibold text-slate-900 flex items-center gap-2 mb-2 px-0">
                     <span>Counts</span>
                   </legend>
-                  <div className="grid grid-cols-2 gap-3">
+                  <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                     <div>
                       <label htmlFor="numSchools" className="block text-sm font-medium text-slate-900 mb-1">
                         Schools
@@ -302,7 +302,7 @@ function App() {
                         <div className="text-xs text-rose-600 mt-1">{errors.numSections}</div>
                       )}
                     </div>
-                    <div className="col-span-2">
+                    <div>
                       <label htmlFor="numStaff" className="block text-sm font-medium text-slate-900 mb-1">
                         Staff
                       </label>
