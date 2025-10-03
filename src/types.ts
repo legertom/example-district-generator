@@ -16,7 +16,7 @@ export interface Student {
   ell_status?: 'Y' | 'N' | 'RFEP' | 'IFEP' | 'EL';
   frl_status?: 'Free' | 'Reduced' | 'Paid';
   iep_status?: 'Y' | 'N';
-  email?: string;
+  student_email?: string;
   school_id: string;
   student_street?: string;
   student_city?: string;
@@ -27,12 +27,12 @@ export interface Student {
 export interface Teacher {
   teacher_id: string;
   teacher_number?: string;
-  state_id?: string;
+  state_teacher_id?: string;
   last_name: string;
   first_name: string;
   middle_name?: string;
   title?: string;
-  email?: string;
+  teacher_email?: string;
   school_id: string;
   username?: string;
 }
@@ -43,12 +43,12 @@ export interface School {
   state_id?: string;
   low_grade?: string;
   high_grade?: string;
-  name: string;
+  school_name: string;
   school_address?: string;
   school_city?: string;
   school_state?: string;
   school_zip?: string;
-  phone?: string;
+  school_phone?: string;
   principal?: string;
   principal_email?: string;
 }
@@ -73,17 +73,16 @@ export interface Section {
 export interface Enrollment {
   section_id: string;
   student_id: string;
+  school_id: string;
 }
 
 export interface Staff {
   staff_id: string;
-  staff_number?: string;
-  state_id?: string;
+  staff_email: string;
   last_name: string;
   first_name: string;
-  middle_name?: string;
+  department?: string;
   title?: string;
-  email?: string;
   school_id: string;
   username?: string;
   role?: string;
@@ -105,16 +104,16 @@ export const CSV_FILE_HEADERS: Record<CSVFileType, string[]> = {
   students: [
     'student_id', 'student_number', 'state_id', 'last_name', 'first_name', 'middle_name',
     'grade', 'gender', 'dob', 'race', 'hispanic_latino', 'home_language', 'ell_status',
-    'frl_status', 'iep_status', 'email', 'school_id', 'student_street', 'student_city',
+    'frl_status', 'iep_status', 'student_email', 'school_id', 'student_street', 'student_city',
     'student_state', 'student_zip'
   ],
   teachers: [
-    'teacher_id', 'teacher_number', 'state_id', 'last_name', 'first_name', 'middle_name',
-    'title', 'email', 'school_id', 'username'
+    'teacher_id', 'teacher_number', 'state_teacher_id', 'last_name', 'first_name', 'middle_name',
+    'title', 'teacher_email', 'school_id', 'username'
   ],
   schools: [
-    'school_id', 'school_number', 'state_id', 'low_grade', 'high_grade', 'name',
-    'school_address', 'school_city', 'school_state', 'school_zip', 'phone',
+    'school_id', 'school_number', 'state_id', 'low_grade', 'high_grade', 'school_name',
+    'school_address', 'school_city', 'school_state', 'school_zip', 'school_phone',
     'principal', 'principal_email'
   ],
   sections: [
@@ -122,10 +121,10 @@ export const CSV_FILE_HEADERS: Record<CSVFileType, string[]> = {
     'subject', 'term_name', 'term_start', 'term_end', 'school_id', 'teacher_id',
     'teacher_2_id', 'teacher_3_id', 'grade'
   ],
-  enrollments: ['section_id', 'student_id'],
+  enrollments: ['school_id', 'section_id', 'student_id'],
   staff: [
-    'staff_id', 'staff_number', 'state_id', 'last_name', 'first_name', 'middle_name',
-    'title', 'email', 'school_id', 'username', 'role'
+    'school_id', 'staff_id', 'staff_email', 'first_name', 'last_name',
+    'department', 'title', 'username', 'role'
   ]
 };
 

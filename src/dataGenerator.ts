@@ -89,12 +89,12 @@ export class DataGenerator {
         state_id: faker.string.alphanumeric(8).toUpperCase(),
         low_grade: lowGrade,
         high_grade: highGrade,
-        name: schoolName,
+        school_name: schoolName,
         school_address: faker.location.streetAddress(),
         school_city: faker.location.city(),
         school_state: state,
         school_zip: faker.location.zipCode(),
-        phone: faker.phone.number(),
+        school_phone: faker.phone.number(),
         principal: `${principalFirstName} ${principalLastName}`,
         principal_email: faker.internet.email({ firstName: principalFirstName, lastName: principalLastName })
       });
@@ -115,12 +115,12 @@ export class DataGenerator {
       teachers.push({
         teacher_id: teacherId,
         teacher_number: (i + 1).toString().padStart(4, '0'),
-        state_id: faker.string.alphanumeric(10).toUpperCase(),
+        state_teacher_id: faker.string.alphanumeric(10).toUpperCase(),
         last_name: lastName,
         first_name: firstName,
         middle_name: faker.person.middleName(),
         title: faker.helpers.arrayElement(['Mr.', 'Ms.', 'Mrs.', 'Dr.']),
-        email: faker.internet.email({ firstName, lastName }),
+        teacher_email: faker.internet.email({ firstName, lastName }),
         school_id: school.school_id,
         username: faker.internet.username({ firstName, lastName })
       });
@@ -170,7 +170,7 @@ export class DataGenerator {
         ell_status: ellStatus,
         frl_status: frlStatus,
         iep_status: iepStatus,
-        email: faker.datatype.boolean(0.7) ? faker.internet.email({ firstName, lastName }) : '',
+        student_email: faker.datatype.boolean(0.7) ? faker.internet.email({ firstName, lastName }) : '',
         school_id: school.school_id,
         student_street: faker.location.streetAddress(),
         student_city: faker.location.city(),
@@ -243,6 +243,7 @@ export class DataGenerator {
       
       enrolledStudents.forEach(student => {
         enrollments.push({
+          school_id: section.school_id,
           section_id: section.section_id,
           student_id: student.student_id
         });
@@ -261,22 +262,17 @@ export class DataGenerator {
       const lastName = faker.person.lastName();
       const school = faker.helpers.arrayElement(schools);
       const role = faker.helpers.arrayElement(STAFF_ROLES);
-      const gender = faker.helpers.arrayElement(GENDERS);
-      
+
       staff.push({
-        staff_id: staffId,
-        staff_number: (i + 1).toString().padStart(4, '0'),
-        state_id: faker.string.alphanumeric(10).toUpperCase(),
-        last_name: lastName,
-        first_name: firstName,
-        middle_name: faker.datatype.boolean(0.6) ? faker.person.middleName() : undefined,
-        title: gender === 'M' ? 
-          faker.helpers.arrayElement(['Mr.', 'Dr.']) : 
-          faker.helpers.arrayElement(['Ms.', 'Mrs.', 'Dr.']),
-        email: faker.internet.email({ firstName, lastName }),
         school_id: school.school_id,
+        staff_id: staffId,
+        staff_email: faker.internet.email({ firstName, lastName }),
+        first_name: firstName,
+        last_name: lastName,
+        department: faker.helpers.arrayElement(['District Office', 'Technology', 'Operations', 'Student Services', 'Counseling']),
+        title: role,
         username: faker.internet.username({ firstName, lastName }).toLowerCase(),
-        role: role
+        role
       });
     }
     

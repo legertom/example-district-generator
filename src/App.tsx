@@ -452,6 +452,14 @@ function App() {
             >
               View the project on GitHub
             </a>
+            <br />
+            <span className="block mt-4 text-slate-400 text-sm font-normal">
+              Built with <a href="https://vitejs.dev" className="text-indigo-500 font-semibold hover:text-indigo-600" target="_blank" rel="noopener noreferrer">Vite</a>
+              &nbsp;&middot;&nbsp;
+              Hosted on <a href="https://vercel.com" className="text-indigo-500 font-semibold hover:text-indigo-600" target="_blank" rel="noopener noreferrer">Vercel</a>
+              &nbsp;&middot;&nbsp;
+              Made with <span className="text-rose-500" role="img" aria-label="love">♥️</span> in NYC
+            </span>
           </p>
         </footer>
       </div>
