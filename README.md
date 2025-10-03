@@ -1,5 +1,7 @@
 # Example District Generator
 
+[View the project on GitHub](https://github.com/legertom/example-district-generator)
+
 A React-based application for generating realistic fake CSV data files compatible with district SFTP specifications. Perfect for testing district integrations and developing district-compatible systems.
 
 ## Features

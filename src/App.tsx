@@ -443,6 +443,15 @@ function App() {
           <p>
             Generates district-compatible CSV files for integration testing.<br />
             <span className="text-slate-500">All data is randomly generated and not based on real individuals.</span>
+            <br />
+            <a
+              href="https://github.com/legertom/example-district-generator"
+              className="text-indigo-500 font-semibold hover:text-indigo-600"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              View the project on GitHub
+            </a>
           </p>
         </footer>
       </div>
