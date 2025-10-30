@@ -96,7 +96,7 @@ export class DataGenerator {
         school_zip: faker.location.zipCode(),
         school_phone: faker.phone.number(),
         principal: `${principalFirstName} ${principalLastName}`,
-        principal_email: faker.internet.email({ firstName: principalFirstName, lastName: principalLastName })
+        principal_email: `${faker.internet.username({ firstName: principalFirstName, lastName: principalLastName }).toLowerCase()}@${this.config.emailDomain}`
       });
     }
     
@@ -120,7 +120,7 @@ export class DataGenerator {
         first_name: firstName,
         middle_name: faker.person.middleName(),
         title: faker.helpers.arrayElement(['Mr.', 'Ms.', 'Mrs.', 'Dr.']),
-        teacher_email: faker.internet.email({ firstName, lastName }),
+        teacher_email: `${faker.internet.username({ firstName, lastName }).toLowerCase()}@${this.config.emailDomain}`,
         school_id: school.school_id,
         username: faker.internet.username({ firstName, lastName })
       });
@@ -170,7 +170,7 @@ export class DataGenerator {
         ell_status: ellStatus,
         frl_status: frlStatus,
         iep_status: iepStatus,
-        student_email: faker.datatype.boolean(0.7) ? faker.internet.email({ firstName, lastName }) : '',
+        student_email: `${faker.internet.username({ firstName, lastName }).toLowerCase()}@${this.config.emailDomain}`,
         school_id: school.school_id,
         student_street: faker.location.streetAddress(),
         student_city: faker.location.city(),
@@ -266,7 +266,7 @@ export class DataGenerator {
       staff.push({
         school_id: school.school_id,
         staff_id: staffId,
-        staff_email: faker.internet.email({ firstName, lastName }),
+        staff_email: `${faker.internet.username({ firstName, lastName }).toLowerCase()}@${this.config.emailDomain}`,
         first_name: firstName,
         last_name: lastName,
         department: faker.helpers.arrayElement(['District Office', 'Technology', 'Operations', 'Student Services', 'Counseling']),

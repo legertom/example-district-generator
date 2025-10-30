@@ -96,6 +96,7 @@ export interface GenerationConfig {
   numStaff: string | number;
   schoolDistrict: string;
   schoolYear: string;
+  emailDomain: string;
 }
 
 export type CSVFileType = 'students' | 'teachers' | 'schools' | 'sections' | 'enrollments' | 'staff';
