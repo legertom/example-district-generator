@@ -137,7 +137,11 @@ export class DataGenerator {
       const firstName = faker.person.firstName();
       const lastName = faker.person.lastName();
       const school = faker.helpers.arrayElement(schools);
-      const grade = faker.helpers.arrayElement(GRADE_LEVELS);
+      
+      // Pick a grade from the school's actual grade range
+      const schoolGrades = this.getGradesInRange(school.low_grade || 'Kindergarten', school.high_grade || '12');
+      const grade = faker.helpers.arrayElement(schoolGrades);
+      
       const gender = faker.helpers.arrayElement(GENDERS) as 'M' | 'F';
       const race = faker.helpers.arrayElement(RACES);
       const hispanicLatino = faker.helpers.arrayElement(['Y', 'N']) as 'Y' | 'N';
@@ -182,6 +186,23 @@ export class DataGenerator {
     return students;
   }
 
+  private getGradesInRange(lowGrade: string, highGrade: string): string[] {
+    // Build array of grades between low and high for this school
+    const gradeOrder = [
+      'InfantToddler', 'Preschool', 'PreKindergarten', 'TransitionalKindergarten', 'Kindergarten',
+      '1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13', 'PostGraduate'
+    ];
+    
+    const lowIndex = gradeOrder.indexOf(lowGrade);
+    const highIndex = gradeOrder.indexOf(highGrade);
+    
+    if (lowIndex === -1 || highIndex === -1) {
+      return ['Kindergarten']; // fallback
+    }
+    
+    return gradeOrder.slice(lowIndex, highIndex + 1);
+  }
+
   generateSections(schools: School[], teachers: Teacher[]): Section[] {
     const sections: Section[] = [];
     
@@ -191,7 +212,11 @@ export class DataGenerator {
       const school = faker.helpers.arrayElement(schools);
       const schoolTeachers = teachers.filter(t => t.school_id === school.school_id);
       const teacher = faker.helpers.arrayElement(schoolTeachers.length > 0 ? schoolTeachers : teachers);
-      const grade = faker.helpers.arrayElement(GRADE_LEVELS);
+      
+      // Pick a grade from the school's actual grade range
+      const schoolGrades = this.getGradesInRange(school.low_grade || 'Kindergarten', school.high_grade || '12');
+      const grade = faker.helpers.arrayElement(schoolGrades);
+      
       const courseNumber = `${subject.substring(0, 3).toUpperCase()}${faker.number.int({ min: 100, max: 999 })}`;
       
       // Optionally add second and third teachers (lower probability)
