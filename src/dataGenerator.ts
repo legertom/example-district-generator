@@ -96,7 +96,7 @@ export class DataGenerator {
         school_zip: faker.location.zipCode(),
         school_phone: faker.phone.number(),
         principal: `${principalFirstName} ${principalLastName}`,
-        principal_email: faker.internet.email({ firstName: principalFirstName, lastName: principalLastName })
+        principal_email: `${faker.internet.username({ firstName: principalFirstName, lastName: principalLastName }).toLowerCase()}@${this.config.emailDomain}`
       });
     }
     
@@ -120,7 +120,7 @@ export class DataGenerator {
         first_name: firstName,
         middle_name: faker.person.middleName(),
         title: faker.helpers.arrayElement(['Mr.', 'Ms.', 'Mrs.', 'Dr.']),
-        teacher_email: faker.internet.email({ firstName, lastName }),
+        teacher_email: `${faker.internet.username({ firstName, lastName }).toLowerCase()}@${this.config.emailDomain}`,
         school_id: school.school_id,
         username: faker.internet.username({ firstName, lastName })
       });
@@ -137,7 +137,11 @@ export class DataGenerator {
       const firstName = faker.person.firstName();
       const lastName = faker.person.lastName();
       const school = faker.helpers.arrayElement(schools);
-      const grade = faker.helpers.arrayElement(GRADE_LEVELS);
+      
+      // Pick a grade from the school's actual grade range
+      const schoolGrades = this.getGradesInRange(school.low_grade || 'Kindergarten', school.high_grade || '12');
+      const grade = faker.helpers.arrayElement(schoolGrades);
+      
       const gender = faker.helpers.arrayElement(GENDERS) as 'M' | 'F';
       const race = faker.helpers.arrayElement(RACES);
       const hispanicLatino = faker.helpers.arrayElement(['Y', 'N']) as 'Y' | 'N';
@@ -170,7 +174,7 @@ export class DataGenerator {
         ell_status: ellStatus,
         frl_status: frlStatus,
         iep_status: iepStatus,
-        student_email: faker.datatype.boolean(0.7) ? faker.internet.email({ firstName, lastName }) : '',
+        student_email: `${faker.internet.username({ firstName, lastName }).toLowerCase()}@${this.config.emailDomain}`,
         school_id: school.school_id,
         student_street: faker.location.streetAddress(),
         student_city: faker.location.city(),
@@ -182,6 +186,23 @@ export class DataGenerator {
     return students;
   }
 
+  private getGradesInRange(lowGrade: string, highGrade: string): string[] {
+    // Build array of grades between low and high for this school
+    const gradeOrder = [
+      'InfantToddler', 'Preschool', 'PreKindergarten', 'TransitionalKindergarten', 'Kindergarten',
+      '1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13', 'PostGraduate'
+    ];
+    
+    const lowIndex = gradeOrder.indexOf(lowGrade);
+    const highIndex = gradeOrder.indexOf(highGrade);
+    
+    if (lowIndex === -1 || highIndex === -1) {
+      return ['Kindergarten']; // fallback
+    }
+    
+    return gradeOrder.slice(lowIndex, highIndex + 1);
+  }
+
   generateSections(schools: School[], teachers: Teacher[]): Section[] {
     const sections: Section[] = [];
     
@@ -191,7 +212,11 @@ export class DataGenerator {
       const school = faker.helpers.arrayElement(schools);
       const schoolTeachers = teachers.filter(t => t.school_id === school.school_id);
       const teacher = faker.helpers.arrayElement(schoolTeachers.length > 0 ? schoolTeachers : teachers);
-      const grade = faker.helpers.arrayElement(GRADE_LEVELS);
+      
+      // Pick a grade from the school's actual grade range
+      const schoolGrades = this.getGradesInRange(school.low_grade || 'Kindergarten', school.high_grade || '12');
+      const grade = faker.helpers.arrayElement(schoolGrades);
+      
       const courseNumber = `${subject.substring(0, 3).toUpperCase()}${faker.number.int({ min: 100, max: 999 })}`;
       
       // Optionally add second and third teachers (lower probability)
@@ -222,28 +247,37 @@ export class DataGenerator {
   generateEnrollments(sections: Section[], students: Student[]): Enrollment[] {
     const enrollments: Enrollment[] = [];
     
-    // Enroll students in sections from their school with grade-appropriate matching
-    sections.forEach(section => {
-      const schoolStudents = students.filter(s => 
-        s.school_id === section.school_id && 
-        s.grade === section.grade
+    // Student-first approach: Each student gets enrolled in multiple sections
+    // This guarantees every student is in at least 1 section (as long as sections exist for their grade/school)
+    students.forEach(student => {
+      // Find all sections that match this student's school and grade
+      const availableSections = sections.filter(s => 
+        s.school_id === student.school_id && 
+        s.grade === student.grade
       );
       
-      if (schoolStudents.length === 0) return;
+      if (availableSections.length === 0) return;
       
-      // Class size varies by grade and subject
-      const gradeLevel = section.grade || 'Kindergarten';
+      // Determine how many classes this student should take (4-8 is realistic for a full schedule)
+      const gradeLevel = student.grade || 'Kindergarten';
       const gradeNumber = this.gradeToNumber(gradeLevel);
-      const baseClassSize = gradeNumber <= 10 ? // Elementary ages (PreK through 5th grade)
-        faker.number.int({ min: 18, max: 25 }) : // Elementary
-        faker.number.int({ min: 20, max: 30 });  // Middle/High school
       
-      const actualClassSize = Math.min(baseClassSize, schoolStudents.length);
-      const enrolledStudents = faker.helpers.arrayElements(schoolStudents, actualClassSize);
+      // Younger students (PreK-2) might have fewer distinct sections
+      // Older students (3rd grade+) have 6-8 sections typically
+      const minSections = gradeNumber <= 7 ? 3 : 5;  // PreK-2 have 3-5, others 5-8
+      const maxSections = gradeNumber <= 7 ? 5 : 8;
       
-      enrolledStudents.forEach(student => {
+      const numSectionsToEnroll = Math.min(
+        faker.number.int({ min: minSections, max: maxSections }),
+        availableSections.length
+      );
+      
+      // Randomly select sections for this student
+      const selectedSections = faker.helpers.arrayElements(availableSections, numSectionsToEnroll);
+      
+      selectedSections.forEach(section => {
         enrollments.push({
-          school_id: section.school_id,
+          school_id: student.school_id,
           section_id: section.section_id,
           student_id: student.student_id
         });
@@ -266,7 +300,7 @@ export class DataGenerator {
       staff.push({
         school_id: school.school_id,
         staff_id: staffId,
-        staff_email: faker.internet.email({ firstName, lastName }),
+        staff_email: `${faker.internet.username({ firstName, lastName }).toLowerCase()}@${this.config.emailDomain}`,
         first_name: firstName,
         last_name: lastName,
         department: faker.helpers.arrayElement(['District Office', 'Technology', 'Operations', 'Student Services', 'Counseling']),

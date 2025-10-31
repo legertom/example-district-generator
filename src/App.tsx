@@ -12,7 +12,8 @@ function App() {
     numSections: '50',
     numStaff: '15',
     schoolDistrict: 'Example District',
-    schoolYear: '2025-2026'
+    schoolYear: '2025-2026',
+    emailDomain: 'exampledistrict.com'
   });
 
   const [generatedData, setGeneratedData] = useState<any>(null);
@@ -25,6 +26,7 @@ function App() {
     const newErrors: { [key: string]: string } = {};
     if (!config.schoolDistrict.trim()) newErrors.schoolDistrict = "District name is required.";
     if (!config.schoolYear) newErrors.schoolYear = "School year is required.";
+    if (!config.emailDomain.trim()) newErrors.emailDomain = "Email domain is required.";
     if (!config.numSchools || isNaN(Number(config.numSchools)) || Number(config.numSchools) < 1) newErrors.numSchools = "Must be at least 1 school.";
     if (!config.numStudents || isNaN(Number(config.numStudents)) || Number(config.numStudents) < 1) newErrors.numStudents = "Must be at least 1 student.";
     if (!config.numTeachers || isNaN(Number(config.numTeachers)) || Number(config.numTeachers) < 1) newErrors.numTeachers = "Must be at least 1 teacher.";
@@ -199,6 +201,27 @@ function App() {
                       </div>
                       {errors.schoolYear && (
                         <div className="text-xs text-rose-600 mt-1">{errors.schoolYear}</div>
+                      )}
+                    </div>
+                    <div className="sm:col-span-2">
+                      <label htmlFor="emailDomain" className="block text-sm font-medium text-slate-900 mb-1">
+                        Email Domain
+                      </label>
+                      <input
+                        id="emailDomain"
+                        type="text"
+                        value={config.emailDomain}
+                        placeholder="e.g. exampledistrict.com"
+                        onChange={(e) => setConfig({ ...config, emailDomain: e.target.value })}
+                        className="mt-1 w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-slate-900 outline-none focus:border-indigo-400 focus:ring-4 ring-indigo-100"
+                        aria-invalid={!!errors.emailDomain}
+                        aria-describedby="emailDomainHelp"
+                      />
+                      <div id="emailDomainHelp" className="text-xs text-slate-500 mt-1">
+                        Domain for all generated email addresses (e.g., john.doe@exampledistrict.com).
+                      </div>
+                      {errors.emailDomain && (
+                        <div className="text-xs text-rose-600 mt-1">{errors.emailDomain}</div>
                       )}
                     </div>
                   </div>
