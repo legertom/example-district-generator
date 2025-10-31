@@ -222,28 +222,37 @@ export class DataGenerator {
   generateEnrollments(sections: Section[], students: Student[]): Enrollment[] {
     const enrollments: Enrollment[] = [];
     
-    // Enroll students in sections from their school with grade-appropriate matching
-    sections.forEach(section => {
-      const schoolStudents = students.filter(s => 
-        s.school_id === section.school_id && 
-        s.grade === section.grade
+    // Student-first approach: Each student gets enrolled in multiple sections
+    // This guarantees every student is in at least 1 section (as long as sections exist for their grade/school)
+    students.forEach(student => {
+      // Find all sections that match this student's school and grade
+      const availableSections = sections.filter(s => 
+        s.school_id === student.school_id && 
+        s.grade === student.grade
       );
       
-      if (schoolStudents.length === 0) return;
+      if (availableSections.length === 0) return;
       
-      // Class size varies by grade and subject
-      const gradeLevel = section.grade || 'Kindergarten';
+      // Determine how many classes this student should take (4-8 is realistic for a full schedule)
+      const gradeLevel = student.grade || 'Kindergarten';
       const gradeNumber = this.gradeToNumber(gradeLevel);
-      const baseClassSize = gradeNumber <= 10 ? // Elementary ages (PreK through 5th grade)
-        faker.number.int({ min: 18, max: 25 }) : // Elementary
-        faker.number.int({ min: 20, max: 30 });  // Middle/High school
       
-      const actualClassSize = Math.min(baseClassSize, schoolStudents.length);
-      const enrolledStudents = faker.helpers.arrayElements(schoolStudents, actualClassSize);
+      // Younger students (PreK-2) might have fewer distinct sections
+      // Older students (3rd grade+) have 6-8 sections typically
+      const minSections = gradeNumber <= 7 ? 3 : 5;  // PreK-2 have 3-5, others 5-8
+      const maxSections = gradeNumber <= 7 ? 5 : 8;
       
-      enrolledStudents.forEach(student => {
+      const numSectionsToEnroll = Math.min(
+        faker.number.int({ min: minSections, max: maxSections }),
+        availableSections.length
+      );
+      
+      // Randomly select sections for this student
+      const selectedSections = faker.helpers.arrayElements(availableSections, numSectionsToEnroll);
+      
+      selectedSections.forEach(section => {
         enrollments.push({
-          school_id: section.school_id,
+          school_id: student.school_id,
           section_id: section.section_id,
           student_id: student.student_id
         });
