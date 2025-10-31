@@ -9,7 +9,6 @@ import type {
   GenerationConfig
 } from './types';
 import {
-  GRADE_LEVELS,
   SUBJECTS,
   STAFF_ROLES,
   RACES,
